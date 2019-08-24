@@ -4,7 +4,6 @@ jobs:
     working_directory: /app
     docker:
       - image: circleci/buildpack-deps:stretch
-    context: quay
     steps:
       - checkout
       - setup_remote_docker
@@ -28,3 +27,10 @@ jobs:
           command: |
             echo quay.io/dcondomitti/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}
             echo quay.io/dcondomitti/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_BRANCH}
+
+workflows:
+  version: 2
+  build-and-release:
+    jobs:
+      - build:
+          context: quay
