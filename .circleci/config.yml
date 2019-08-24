@@ -2,6 +2,8 @@ version: 2.1
 jobs:
   build:
     working_directory: /app
+    docker:
+      - image: circleci/buildpack-deps:stretch
     context: quay
     steps:
       - checkout
