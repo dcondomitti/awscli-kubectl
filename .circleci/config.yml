@@ -37,14 +37,7 @@ jobs:
           environment:
             DOCKER_CLI_EXPERIMENTAL: enabled
           command: |
-             docker buildx build --platform=linux/arm64,linux/amd64 -t ${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1} .
-      - run:
-          name: Tag and push image
-          command: |
-            docker tag ${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1} quay.io/dcondomitti/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}
-            docker push quay.io/dcondomitti/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}
-            docker tag ${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1} quay.io/dcondomitti/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_BRANCH}
-            docker push quay.io/dcondomitti/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_BRANCH}
+             docker buildx build --platform=linux/arm64,linux/amd64 --push -t quay.io/dcondomitti/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1} .
       - run:
           name: Echo images
           command: |
