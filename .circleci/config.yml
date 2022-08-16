@@ -1,19 +1,43 @@
 version: 2.1
-jobs:
-  build:
-    docker:
-      - image: circleci/buildpack-deps:stretch
+commands:
+  setup:
     steps:
       - checkout
-      - setup_remote_docker
+      - run:
+          name: Setup buildx and qemu
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y qemu-user-static
+            sudo apt-get install -y binfmt-support
+      - run:
+          name: Check versions
+          command: |
+            qemu-aarch64-static --version
+            update-binfmts --version
+      - run:
+          name: Create builder
+          command: |
+            export DOCKER_CLI_EXPERIMENTAL=enabled
+            docker buildx create --name arm-builder
+            docker buildx use arm-builder
+            docker buildx inspect --bootstrap
+
+jobs:
+  build:
+    machine:
+      image: ubuntu-2004:202010-01
+    steps:
+      - setup
       - run:
           name: Authenticate to Quay
           command: |
             docker login -u="${QUAY_USER}" -p="${QUAY_TOKEN}" quay.io
       - run:
           name: Build image
+          environment:
+            DOCKER_CLI_EXPERIMENTAL: enabled
           command: |
-            docker buildx build --platform=linux/arm64 -t ${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1} .
+             docker buildx build --platform=linux/arm64,linux/amd64 -t ${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1} .
       - run:
           name: Tag and push image
           command: |
