@@ -13,7 +13,7 @@ jobs:
       - run:
           name: Build image
           command: |
-            docker build -t ${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1} .
+            docker buildx build --platform=linux/arm64 -t ${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1} .
       - run:
           name: Tag and push image
           command: |
